@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student WhatsApp Numbers Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #0056b3;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .table-container {
+            margin-top: 20px;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .action-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .action-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            width: 250px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Student WhatsApp Numbers Management</h1>
+
+        <!-- Form to Add Student -->
+        <div class="form-container">
+            <div class="input-group">
+                <label for="studentName">Student Name</label>
+                <input type="text" id="studentName" placeholder="Enter student name" required>
+            </div>
+            <div class="input-group">
+                <label for="whatsAppNumber">WhatsApp Number</label>
+                <input type="tel" id="whatsAppNumber" placeholder="Enter WhatsApp number" required>
+            </div>
+
+            <div class="button-container">
+                <button class="submit-btn" onclick="addStudent()">Add Student</button>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search by name..." onkeyup="searchStudent()">
+        </div>
+
+        <!-- Table to Display Students -->
+        <div class="table-container">
+            <table id="studentTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>WhatsApp Number</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Student Data Rows Will Appear Here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Array to hold student data
+        let students = [];
+
+        // Function to add student
+        function addStudent() {
+            const studentName = document.getElementById("studentName").value;
+            const whatsAppNumber = document.getElementById("whatsAppNumber").value;
+
+            if (studentName === "" || whatsAppNumber === "") {
+                alert("Both fields are required!");
+                return;
+            }
+
+            // Add student data to array
+            const student = {
+                name: studentName,
+                number: whatsAppNumber
+            };
+
+            students.push(student);
+
+            // Clear the form inputs
+            document.getElementById("studentName").value = '';
+            document.getElementById("whatsAppNumber").value = '';
+
+            // Re-render the table with updated data
+            renderTable();
+        }
+
+        // Function to render the student table
+        function renderTable() {
+            const tableBody = document.getElementById("studentTable").getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = ""; // Clear existing table data
+
+            students.forEach((student, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>${student.number}</td>
+                    <td><button class="action-btn" onclick="deleteStudent(${index})">Delete</button></td>
+                `;
+            });
+        }
+
+        // Function to delete student
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            renderTable();
+        }
+
+        // Function to search student by name
+        function searchStudent() {
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+            const filteredStudents = students.filter(student => student.name.toLowerCase().includes(searchTerm));
+            renderFilteredTable(filteredStudents);
+        }
+
+        // Function to render filtered student table
+        function renderFilteredTable(filteredStudents) {
+            const tableBody = document.getElementById("studentTable").getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = ""; // Clear existing table data
+
+            filteredStudents.forEach((student, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>${student.number}</td>
+                    <td><button class="action-btn" onclick="deleteStudent(${index})">Delete</button></td>
+                `;
+            });
+        }
+    </script>
+</body>
+
+</html>
